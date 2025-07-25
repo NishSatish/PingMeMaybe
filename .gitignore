@@ -1,0 +1,30 @@
+# Ignore all .env files across modules
+*.env
+
+# Standard Go practice
+# Binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build directories
+/build/
+/bin/
+
+# Go test binaries
+*.test
+
+# Vendor directory
+/vendor/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+*.tmp
+*.out
