@@ -1,6 +1,7 @@
 package notifications
 
 import (
+	"PingMeMaybe/libs/db/models"
 	"PingMeMaybe/libs/dto"
 	"PingMeMaybe/libs/messagePatterns"
 	"encoding/json"
@@ -15,7 +16,8 @@ import (
 
 type notificationsService struct {
 	// can be left empty also just for the sake of interface implementation
-	asynq *asynq.Client
+	asynq                  *asynq.Client
+	notificationRepository models.INotificationRepository
 }
 
 type NotificationsServiceInterface interface {
@@ -23,14 +25,14 @@ type NotificationsServiceInterface interface {
 }
 
 // Constructor
-func NewNotificationsService(asynq *asynq.Client) NotificationsServiceInterface {
+func NewNotificationsService(asynq *asynq.Client, notificationsRepository models.INotificationRepository) NotificationsServiceInterface {
 	return &notificationsService{
 		asynq,
+		notificationsRepository,
 	}
 }
 
 func (n *notificationsService) QueueNotification(ctx *gin.Context) {
-	fmt.Println("THE INCOMING", n.asynq)
 	//defer n.asynq.Close()
 	var notif dto.PostNotificationDTO
 	err := ctx.BindJSON(&notif)
@@ -40,12 +42,10 @@ func (n *notificationsService) QueueNotification(ctx *gin.Context) {
 		return
 	}
 	payload, err := json.Marshal(dto.PostNotificationDTO{
-		Id:          notif.Id,
 		Title:       notif.Title,
 		Description: notif.Description,
 		Link:        notif.Link,
 	})
-	fmt.Println("I GAAT IT! I GAAT IT!", payload)
 	task := asynq.NewTask(messagePatterns.DispatchNotification, payload)
 
 	info, err := n.asynq.Enqueue(task, asynq.MaxRetry(10), asynq.Timeout(3*time.Minute))
@@ -54,6 +54,16 @@ func (n *notificationsService) QueueNotification(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": notif})
 		return
 	}
+
+	// Save the notification trigger entry in postgres
+	notificationPayload, err := json.Marshal(models.NotificationPayload{Link: notif.Link})
+	notificationObject := models.Notification{
+		Title:       notif.Title,
+		Description: notif.Description,
+		Payload:     notificationPayload,
+		Status:      models.NotificationStatusProcessing,
+	}
+	id, err := n.notificationRepository.CreateNotification(ctx, notificationObject)
 	log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
-	ctx.JSON(http.StatusOK, gin.H{"success": true, "task_id": info.ID, "queue": info.Queue})
+	ctx.JSON(http.StatusOK, gin.H{"success": true, "task_id": info.ID, "queue": info.Queue, "notification_id": id, "payload": payload})
 }

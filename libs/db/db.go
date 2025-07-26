@@ -9,7 +9,7 @@ import (
 
 func InitDBConn() (*pgx.Conn, error) {
 	configLib.LoadEnv(".")
-	conn, err := pgx.Connect(context.Background(), configLib.GetConfig().GetString("DATABASE_POOL_MODE_URL"))
+	conn, err := pgx.Connect(context.Background(), configLib.GetConfig().GetString("DATABASE_SESSION_POOLING_MODE_URL"))
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}

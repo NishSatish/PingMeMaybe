@@ -2,6 +2,7 @@ package service
 
 import (
 	"PingMeMaybe/gateway/pkg/service/notifications"
+	"PingMeMaybe/libs/db"
 	"github.com/hibiken/asynq"
 )
 
@@ -21,8 +22,8 @@ func (a *AppServices) NotificationsService() notifications.NotificationsServiceI
 	return a.Notifications
 }
 
-func InitAppServices(asynq *asynq.Client) AppServicesInterface {
+func InitAppServices(asynq *asynq.Client, dbService *db.DBService) AppServicesInterface {
 	return &AppServices{
-		Notifications: notifications.NewNotificationsService(asynq),
+		Notifications: notifications.NewNotificationsService(asynq, dbService.NotificationsRepository()),
 	}
 }

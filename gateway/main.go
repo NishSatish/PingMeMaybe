@@ -14,5 +14,5 @@ func main() {
 		log.Fatal("Failed to initialize database connection: " + err.Error())
 	}
 
-	server.StartServer()
+	server.StartServer(dbConn)
 }

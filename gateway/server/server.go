@@ -3,16 +3,13 @@ package server
 import (
 	_ "encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 )
 
-func StartServer() {
-	startHttpServer()
-}
-
-func startHttpServer() {
+func StartServer(db *pgx.Conn) {
 	r := gin.Default()
 
-	serverWithRoutes := SetRoutes(r)
+	serverWithRoutes := SetRoutes(r, db)
 
 	err := serverWithRoutes.Run(":8080")
 	if err != nil {
