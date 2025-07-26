@@ -1,7 +1,15 @@
-package processor
+package main
 
-import "PingMeMaybe/processor/server"
+import (
+	"PingMeMaybe/libs/db"
+	"PingMeMaybe/processor/server"
+)
 
 func main() {
-	server.StartServer()
+	dbConn, err := db.InitDBConn()
+	if err != nil {
+		panic("Failed to initialize database connection: " + err.Error())
+	}
+
+	server.StartServer(dbConn)
 }

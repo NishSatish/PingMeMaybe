@@ -5,16 +5,13 @@ import (
 	"PingMeMaybe/processor/pkg/service"
 	_ "encoding/json"
 	"github.com/hibiken/asynq"
+	"github.com/jackc/pgx/v5"
 	"log"
 )
 
-func StartServer() {
-	startMuxServer()
-}
-
-func startMuxServer() {
+func StartServer(dbConn *pgx.Conn) {
 	// This is a background processor, wont be exposed by HTTP
-	services := service.NewProcessorServices()
+	services := service.NewProcessorServices(dbConn)
 
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{Addr: "localhost:6379"},

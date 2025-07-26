@@ -58,10 +58,11 @@ func (n *notificationsService) QueueNotification(ctx *gin.Context) {
 	// Save the notification trigger entry in postgres
 	notificationPayload, err := json.Marshal(models.NotificationPayload{Link: notif.Link})
 	notificationObject := models.Notification{
-		Title:       notif.Title,
-		Description: notif.Description,
-		Payload:     notificationPayload,
-		Status:      models.NotificationStatusProcessing,
+		Title:         notif.Title,
+		Description:   notif.Description,
+		Payload:       notificationPayload,
+		Status:        models.NotificationStatusProcessing,
+		TransactionId: info.ID,
 	}
 	id, err := n.notificationRepository.CreateNotification(ctx, notificationObject)
 	log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
