@@ -1,8 +1,8 @@
 package server
 
 import (
-	"PingMeMaybe/gateway/pkg/config"
 	"PingMeMaybe/gateway/pkg/service"
+	"PingMeMaybe/libs/config"
 	"github.com/gin-gonic/gin"
 )
 

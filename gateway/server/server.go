@@ -14,5 +14,9 @@ func startHttpServer() {
 
 	serverWithRoutes := SetRoutes(r)
 
-	serverWithRoutes.Run(":8080")
+	err := serverWithRoutes.Run(":8080")
+	if err != nil {
+		panic(err)
+		return
+	}
 }
