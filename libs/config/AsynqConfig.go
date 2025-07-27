@@ -3,5 +3,11 @@ package config
 import "github.com/hibiken/asynq"
 
 func GetAsynqClient() *asynq.Client {
-	return asynq.NewClient(asynq.RedisClientOpt{Addr: "localhost:6379"})
+	LoadEnv(".")
+
+	return asynq.NewClient(asynq.RedisClientOpt{
+		Addr:     GetConfig().GetString("REDIS_CLUSTER"),
+		Username: GetConfig().GetString("REDIS_USERNAME"),
+		Password: GetConfig().GetString("REDIS_PASSWORD"),
+	})
 }

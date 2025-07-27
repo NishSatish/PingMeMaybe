@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	dbConn, err := db.InitDBConn()
+	dbConn, err := db.InitDBPoolConn()
 	if err != nil {
 		panic("Failed to initialize database connection: " + err.Error())
 	}

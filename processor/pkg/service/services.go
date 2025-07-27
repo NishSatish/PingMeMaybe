@@ -1,6 +1,8 @@
 package service
 
-import "github.com/jackc/pgx/v5"
+import (
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 type ProcessorServices struct {
 	INotificationProcessorService
@@ -10,7 +12,7 @@ type IProcessorServices interface {
 	INotificationProcessorService
 }
 
-func NewProcessorServices(db *pgx.Conn) IProcessorServices {
+func NewProcessorServices(db *pgxpool.Pool) IProcessorServices {
 	return &ProcessorServices{
 		INotificationProcessorService: NewNotificationProcessorService(db),
 	}

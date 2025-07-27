@@ -1,20 +1,25 @@
 package server
 
 import (
+	"PingMeMaybe/libs/config"
 	"PingMeMaybe/libs/messagePatterns"
 	"PingMeMaybe/processor/pkg/service"
 	_ "encoding/json"
 	"github.com/hibiken/asynq"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 )
 
-func StartServer(dbConn *pgx.Conn) {
+func StartServer(dbConn *pgxpool.Pool) {
 	// This is a background processor, wont be exposed by HTTP
 	services := service.NewProcessorServices(dbConn)
 
 	srv := asynq.NewServer(
-		asynq.RedisClientOpt{Addr: "localhost:6379"},
+		asynq.RedisClientOpt{
+			Addr:     config.GetConfig().GetString("REDIS_CLUSTER"),
+			Username: config.GetConfig().GetString("REDIS_USERNAME"),
+			Password: config.GetConfig().GetString("REDIS_PASSWORD"),
+		},
 		asynq.Config{
 			Concurrency: 10,
 			// Priorities

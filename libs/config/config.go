@@ -1,6 +1,9 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
+	"github.com/spf13/viper"
+)
 
 var config *viper.Viper
 
@@ -13,11 +16,11 @@ func LoadEnv(path string) {
 	config.SetConfigName("local")
 	config.SetConfigType("env")
 
-	config.AutomaticEnv()
+	config.AutomaticEnv() // For using injected vars in the docker container
 
 	err := config.ReadInConfig()
 	if err != nil {
-		panic(err)
+		fmt.Println("Cannot find local.env, switching to automatic env mode")
 	}
 	return
 }

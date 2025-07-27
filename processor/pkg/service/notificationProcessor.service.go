@@ -7,19 +7,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hibiken/asynq"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 )
 
 type notificationProcessorService struct {
-	db *pgx.Conn
+	db *pgxpool.Pool
 }
 
 type INotificationProcessorService interface {
 	HandleNotificationQueueItems(ctx context.Context, task *asynq.Task) error
 }
 
-func NewNotificationProcessorService(db *pgx.Conn) INotificationProcessorService {
+func NewNotificationProcessorService(db *pgxpool.Pool) INotificationProcessorService {
 	return &notificationProcessorService{
 		db,
 	}
