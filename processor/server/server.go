@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-func StartServer(dbConn *pgxpool.Pool) {
+func StartAsynqServer(dbConn *pgxpool.Pool) {
 	// This is a background processor, wont be exposed by HTTP
 	services := service.NewProcessorServices(dbConn)
 

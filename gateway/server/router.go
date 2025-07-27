@@ -5,10 +5,10 @@ import (
 	"PingMeMaybe/libs/config"
 	"PingMeMaybe/libs/db"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func SetRoutes(r *gin.Engine, dbConn *pgx.Conn) *gin.Engine {
+func SetRoutes(r *gin.Engine, dbConn *pgxpool.Pool) *gin.Engine {
 	asynqClient := config.GetAsynqClient()
 	dbService := db.NewDBService(dbConn)
 

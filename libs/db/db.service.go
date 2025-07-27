@@ -2,7 +2,7 @@ package db
 
 import (
 	"PingMeMaybe/libs/db/models"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Service that just interfaces all DB model services from one place
@@ -19,7 +19,7 @@ func (this DBService) NotificationsRepository() models.INotificationRepository {
 	return this.Notifications
 }
 
-func NewDBService(db *pgx.Conn) *DBService {
+func NewDBService(db *pgxpool.Pool) *DBService {
 	return &DBService{
 		Notifications: models.NewNotificationRepo(db),
 	}

@@ -3,10 +3,10 @@ package server
 import (
 	_ "encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func StartServer(db *pgx.Conn) {
+func StartServer(db *pgxpool.Pool) {
 	r := gin.Default()
 
 	serverWithRoutes := SetRoutes(r, db)
