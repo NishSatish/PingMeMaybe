@@ -112,6 +112,19 @@ curl -X POST http://localhost:8080/notification \
 
 ---
 
+## Data Flow
+
+- POST /notification is called.
+- The request is handled by QueueNotification, which:
+    - Parses the request body.
+    - Enqueues a task to Redis (via Asynq).
+    - Saves a notification record in Postgres with status "PROCESSING".
+- The Asynq processor (in the processor service) picks up the task from Redis.
+- The processor's handler (HandleNotificationQueueItems) updates the notification status in Postgres to "SUCCESS" (or "FAILED" if there is an error).
+- The notification is now marked as processed in the database.
+
+---
+
 ## Deployment
 
 - Docker and Kubernetes manifests are available in the `k8s/` folder for containerized deployment.
