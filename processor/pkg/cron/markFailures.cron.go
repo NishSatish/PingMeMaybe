@@ -2,7 +2,6 @@ package cron
 
 import (
 	"PingMeMaybe/libs/db"
-	"PingMeMaybe/libs/db/models"
 	"PingMeMaybe/libs/utils"
 	"context"
 	"fmt"
@@ -29,9 +28,8 @@ func NewMarkFailuresCron(db *db.DBService) MarkFailuresCronInterface {
 func (m *MarkFailuresCron) StartMarkFailuresCron() {
 	cronJob := cron.New()
 	_, err := cronJob.AddFunc("@every 10s", func() {
-		fmt.Println("HELLOOOOO")
 
-		notifications, err := m.db.Notifications.GetAllNotifications(context.Background())
+		notifications, err := m.db.Notifications.GetPendingNotifications(context.Background())
 		if err != nil {
 			log.Fatal("Could not fecth notifications:", err)
 		}
@@ -44,7 +42,7 @@ func (m *MarkFailuresCron) StartMarkFailuresCron() {
 
 		for _, n := range notifications {
 			notification := n // capture range variable
-			if notification.Status == models.NotificationStatusProcessing && utils.IsOlderThanOneDay(notification.CreatedAt) {
+			if utils.IsOlderThanOneDay(notification.CreatedAt) {
 				g.Go(func() error {
 					fmt.Printf("Marking notification %d \n", notification.TransactionId)
 					err := m.db.Notifications.MarkNotificationAsFailed(context.Background(), notification.TransactionId)
