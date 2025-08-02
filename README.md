@@ -101,30 +101,6 @@ curl -X POST http://localhost:8080/notification \
 
 ---
 
-## Architecture Overview
-
-- **gateway/main.go:** Entry point for the API server.
-- **processor/main.go:** Entry point for the background worker and cron jobs.
-- **libs/config/config.go:** Loads environment variables from `local.env`.
-- **libs/db/models/Notification.go:** Notification model and repository logic.
-- **libs/dto/PostNotification.dto.go:** DTO for notification requests.
-- **libs/messagePatterns/msgPatterns.go:** Asynq message types.
-
----
-
-## Data Flow
-
-- POST /notification is called.
-- The request is handled by QueueNotification, which:
-    - Parses the request body.
-    - Enqueues a task to Redis (via Asynq).
-    - Saves a notification record in Postgres with status "PROCESSING".
-- The Asynq processor (in the processor service) picks up the task from Redis.
-- The processor's handler (HandleNotificationQueueItems) updates the notification status in Postgres to "SUCCESS" (or "FAILED" if there is an error).
-- The notification is now marked as processed in the database.
-
----
-
 ## Deployment
 
 - Docker and Kubernetes manifests are available in the `k8s/` folder for containerized deployment.
