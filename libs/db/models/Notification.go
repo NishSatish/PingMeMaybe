@@ -40,6 +40,7 @@ type INotificationRepository interface {
 	GetNotificationByID(ctx context.Context, id int) (*Notification, error)
 	MarkNotificationAsFailed(ctx context.Context, task_id string) error
 	GetAllNotifications(ctx context.Context) ([]Notification, error)
+	GetPendingNotifications(ctx context.Context) ([]Notification, error)
 }
 
 func NewNotificationRepo(db *pgxpool.Pool) INotificationRepository {
@@ -90,6 +91,44 @@ func (r *NotificationRepo) GetAllNotifications(ctx context.Context) ([]Notificat
 	rows, err := r.DB.Query(ctx, query)
 	if err != nil {
 		fmt.Println("Error fetching notifications:", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var notifications []Notification
+
+	for rows.Next() {
+		var n Notification
+		err := rows.Scan(
+			&n.ID,
+			&n.Title,
+			&n.Description,
+			&n.Payload,
+			&n.ChannelID,
+			&n.TransactionId,
+			&n.Status,
+			&n.CreatedAt,
+		)
+		if err != nil {
+			fmt.Println("Error scanning notification row:", err)
+			continue
+		}
+		notifications = append(notifications, n)
+	}
+
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+
+	return notifications, nil
+}
+
+func (r *NotificationRepo) GetPendingNotifications(ctx context.Context) ([]Notification, error) {
+	query := `SELECT id, title, description, payload, channel_id, transaction_id, status, created_at 
+			  FROM notifications WHERE status = $1`
+	rows, err := r.DB.Query(ctx, query, NotificationStatusProcessing)
+	if err != nil {
+		fmt.Println("Error fetching pending notifications:", err)
 		return nil, err
 	}
 	defer rows.Close()

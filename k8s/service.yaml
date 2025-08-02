@@ -1,0 +1,26 @@
+# WIP: k8s deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  selector:
+    app: gateway
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: processor-service
+spec:
+  selector:
+    app: processor
+  ports:
+    - port: 80
+      targetPort: 8081
