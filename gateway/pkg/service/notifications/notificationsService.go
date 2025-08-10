@@ -21,7 +21,8 @@ type notificationsService struct {
 }
 
 type NotificationsServiceInterface interface {
-	QueueNotification(ctx *gin.Context)
+	QueueNotification(ctx *gin.Context)  // For high priority non-bulk transactional notifications.
+	QueueBulkBroadcast(ctx *gin.Context) // Initiates bulk requests, passed to the bulk initiating queue.
 }
 
 // Constructor
@@ -67,4 +68,8 @@ func (n *notificationsService) QueueNotification(ctx *gin.Context) {
 	id, err := n.notificationRepository.CreateNotification(ctx, notificationObject)
 	log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
 	ctx.JSON(http.StatusOK, gin.H{"success": true, "task_id": info.ID, "queue": info.Queue, "notification_id": id, "payload": payload})
+}
+
+func (n *notificationsService) QueueBulkBroadcast(ctx *gin.Context) {
+	panic("implement me")
 }

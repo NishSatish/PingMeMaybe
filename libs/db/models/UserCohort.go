@@ -18,6 +18,8 @@ const (
 
 // The schema is this bloated because we have a pre-seeded user table,
 // and I'm too lazy to either make a separate user schema at the service level or a separate Cohorts table
+
+// Will refactor in a future iteration to make this entire project an open-source module
 type UserCohort struct {
 	UserID            int            `json:"user_id"`
 	Email             string         `json:"email"`
@@ -98,20 +100,26 @@ func (r *UserCohortRepo) GetCohortUsers(ctx context.Context, cohortType UserCoho
 	switch cohortType {
 	case CohortNonPremium:
 		whereConditions = append(whereConditions, "u.is_premium_user = false")
+		break
 	case CohortActivePremium:
 		whereConditions = append(whereConditions,
 			"u.is_premium_user = true",
 			"(u.subscription_end_date IS NULL OR u.subscription_end_date > CURRENT_DATE)")
+		break
 	case CohortPremiumNearExpiry:
 		whereConditions = append(whereConditions,
 			"u.is_premium_user = true",
 			"u.subscription_end_date IS NOT NULL",
 			"u.subscription_end_date > CURRENT_DATE",
 			"u.subscription_end_date <= CURRENT_DATE + INTERVAL '30 days'")
+		break
 	case CohortExpiredPremium:
 		whereConditions = append(whereConditions,
 			"u.subscription_end_date IS NOT NULL",
 			"u.subscription_end_date < CURRENT_DATE")
+		break
+	default:
+		break // Just get all active users. These other cases are just templates, the whole query can be customised with the filters param.
 	}
 
 	// Add optional filters

@@ -1,5 +1,6 @@
 package messagePatterns
 
 const (
-	DispatchNotification = "DispatchNotification"
+	DispatchNotification  = "DispatchNotification"
+	InitiateBulkBroadcast = "InitiateBulkBroadcast"
 )
