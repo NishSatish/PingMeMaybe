@@ -23,6 +23,7 @@ func NewCohortsService(asynq *asynq.Client, cohortsRepository models.IUserCohort
 
 func (c *CohortsService) GetUserCohorts(userId int) ([]models.UserCohort, error) {
 	return nil, nil
+	// TODO: WIP
 	//cohorts, err := c.cohortsRepository.GetCohortUsers()
 	//if err != nil {
 	//	return nil, err
