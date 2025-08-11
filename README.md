@@ -7,10 +7,7 @@ Inspiration for the architecture is drawn from this [medium article](https://ama
 
 ## Features WIP
 
-- **HTTP API Gateway:** Accepts notification requests via REST endpoints.
-- **Background Processor:** Handles notification dispatch and periodic failure marking using Asynq and cron jobs.
-- **PostgreSQL Storage:** Persists notification metadata and status.
-- **Redis Queue:** Manages background task distribution.
+This is a monorepo based microservice system, which has a gateway that exposes client facing APIs. The gateway accepts requests and payloads for quick transactional notifications as well as for bulk broadcasting. There is a redis based queueing system built with Asynq, from which the "processor" service picks up "jobs" (sending notifications) and processes them. Current WIP focuses on building a cohort querying mechanism and computing/distributing the relevant batches to workers.
 
 ---
 
@@ -20,6 +17,7 @@ Inspiration for the architecture is drawn from this [medium article](https://ama
 - `processor/` — Asynq worker, cron jobs, and notification processing.
 - `libs/` — Shared code: config, DB models, DTOs, message patterns, utilities.
 - `k8s/` — Kubernetes manifests for deployment.
+- `sql/` — Contains migrations and seed scripts for the DB setup.
 
 ---
 
@@ -45,20 +43,9 @@ Inspiration for the architecture is drawn from this [medium article](https://ama
    ```
 
 3. **Create the database table**
-   Connect to your database and run:
-   ```sql
-   CREATE TABLE IF NOT EXISTS notifications (
-       id SERIAL PRIMARY KEY,
-       title TEXT NOT NULL,
-       description TEXT NOT NULL,
-       payload TEXT,
-       transaction_id TEXT NOT NULL,
-       status TEXT NOT NULL,
-       created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-       channel_id INTEGER,
-       user_id INTEGER
-   );
-   ```
+
+   Feel free to use the scripts in the `sql/` directory to create the necessary tables. You can run the SQL scripts manually or use a migration tool like `golang-migrate`.
+
 
 4. **Configure environment variables**
    Create a file named `local.env` in the project root:
