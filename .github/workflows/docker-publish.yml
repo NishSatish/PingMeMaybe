@@ -28,7 +28,6 @@ jobs:
           push: true
           tags: |
             nishsatish/pingmemaybe:gateway
-            nishsatish/pingmemaybe:gateway-latest
 
       - name: Build & Push Processor Image
         uses: docker/build-push-action@v5
@@ -38,4 +37,3 @@ jobs:
           push: true
           tags: |
             nishsatish/pingmemaybe:processor
-            nishsatish/pingmemaybe:processor-latest
