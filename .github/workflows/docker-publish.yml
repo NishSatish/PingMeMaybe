@@ -3,7 +3,7 @@ name: Build and Push Docker Images
 on:
   push:
     branches:
-      - main
+      - infra/setup-github-actions-for-docker-push-on-main # Temporarily, for debugging purposes
 
 jobs:
   build:
@@ -13,6 +13,11 @@ jobs:
       # Checkout the repo
       - name: Checkout source
         uses: actions/checkout@v3
+
+      - name: Verify Docker login
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker info
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
